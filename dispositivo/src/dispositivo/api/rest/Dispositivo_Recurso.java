@@ -82,17 +82,14 @@ public class Dispositivo_Recurso extends Recurso {
 			payload = new JSONObject(entity.getText());
 			String action = payload.getString("accion");
 			
-			if ( action.equalsIgnoreCase("<accion-permitida>") )
-				// d.accion());
-				;
-
-		// TO-DO: Ejercicio 5 - Implementar funciones habilitar/deshabilitar
-
-				else {
+			if ( action.equalsIgnoreCase("activar") ){
+				d.habilitar();
+			} else if ( action.equalsIgnoreCase("desactivar")) {
+				d.deshabilitar();
+			} else {
 				MySimpleLogger.warn("Dispositivo-Recurso", "Acción '" + payload + "' no reconocida. Sólo admitidas: habilitar o deshabilitar");
 				this.generateResponseWithErrorCode(Status.CLIENT_ERROR_BAD_REQUEST);
 			}
-			
 		} catch (JSONException | IOException e) {
 			this.generateResponseWithErrorCode(Status.CLIENT_ERROR_BAD_REQUEST);
 		}

@@ -1,5 +1,6 @@
 package dispositivo.api.rest;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import org.restlet.resource.Put;
 
 import dispositivo.interfaces.IDispositivo;
 import dispositivo.interfaces.IFuncion;
+import dispositivo.utils.MySimpleLogger;
 
 public class Funcion_Recurso extends Recurso {
 	
@@ -72,9 +74,23 @@ public class Funcion_Recurso extends Recurso {
 		}
 
 		// Función encontrada
-		// TO-DO: Ejercicio 5 - Implementar funciones habilitar/deshabilitar
+		try {
+			String accion = new JSONObject(entity.getText()).getString("accion");
 
-		
+			if ( accion.equalsIgnoreCase("encender") ) {
+				f.encender();
+			} else if ( accion.equalsIgnoreCase("apagar") ) {
+				f.apagar();
+			} else if ( accion.equalsIgnoreCase("parpadear") ) {
+				f.parpadear();
+			} else {
+				MySimpleLogger.warn("Funcion-Recurso", "Acción '" + accion + "' no reconocida. Sólo admitidas: encender, apagar o parpadear");
+				return this.generateResponseWithErrorCode(Status.CLIENT_ERROR_BAD_REQUEST);
+			}
+		} catch (JSONException | IOException e) {
+			return this.generateResponseWithErrorCode(Status.CLIENT_ERROR_BAD_REQUEST);
+		}
+
 		// Construimos el mensaje de respuesta
 
     	JSONObject resultJSON = Funcion_Recurso.serialize(f);
