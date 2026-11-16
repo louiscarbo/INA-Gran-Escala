@@ -17,6 +17,7 @@ public class Dispositivo implements IDispositivo {
 	protected Dispositivo_RegistradorMQTT registrador = null;
 	protected Dispositivo_APIMQTT apiFuncionesMQTT = null;
 	protected Dispositivo_APIREST apiFuncionesREST = null;
+	protected boolean habilitado = true;
 	
 	
 	public static Dispositivo build(String deviceId, String ip, String mqttBrokerURL) {
@@ -99,5 +100,18 @@ public class Dispositivo implements IDispositivo {
 		}
 		return this;
 	}
-	
+
+	public boolean estaHabilitado() {
+		return this.habilitado;
+	}
+
+	public void habilitar() {
+		this.habilitado = true;
+		this.functions.values().forEach(funcion -> funcion.habilitar());
+	}
+
+	public void deshabilitar() {
+		this.habilitado = false;
+		this.functions.values().forEach(funcion -> funcion.deshabilitar());
+	}
 }

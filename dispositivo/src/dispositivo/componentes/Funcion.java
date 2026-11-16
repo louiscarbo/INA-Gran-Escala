@@ -9,6 +9,7 @@ public class Funcion implements IFuncion {
 	protected String id = null;
 	protected FuncionStatus initialStatus = null;
 	protected FuncionStatus status = null;
+	protected boolean habilitado = true;
 	
 	private String loggerId = null;
 	
@@ -111,7 +112,15 @@ public class Funcion implements IFuncion {
 	
 	
 	public boolean estaHabilitada() {
-		return true; // TO-DO: Ejercicio 4
+		return habilitado;
+	}
+
+	public void habilitar() {
+		this.habilitado = true;
+	}
+
+	public void deshabilitar() {
+		this.habilitado = false;
 	}
 
 	protected void publishStatusChange() {

@@ -29,6 +29,7 @@ public class Dispositivo_Recurso extends Recurso {
 		
 		try {
 			jsonResult.put("id", dispositivo.getId());
+			jsonResult.put("habilitado", dispositivo.estaHabilitado());
 			if ( dispositivo.getFunciones() != null ) {
 				JSONArray arrayFunciones = new JSONArray();
 				for(IFuncion f : dispositivo.getFunciones()) {
