@@ -55,9 +55,8 @@ public class Dispositivo_Recurso extends Recurso {
 		IDispositivo d = this.getDispositivo();
 
 		// Construimos el mensaje de respuesta
-		// TO-DO: Ejercicio 2 - Codificar Mensaje respuesta API
-		// Hint : en esta clase se ha definido un método estático serialize que puede ser útil
     	JSONObject resultJSON = new JSONObject();
+		resultJSON = serialize(this.getDispositivo());
     	
 		// Si todo va bien, devolvemos el resultado calculado
     	this.setStatus(Status.SUCCESS_OK);
