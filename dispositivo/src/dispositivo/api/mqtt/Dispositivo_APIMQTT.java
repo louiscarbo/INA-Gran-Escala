@@ -71,48 +71,54 @@ public class Dispositivo_APIMQTT implements MqttCallback {
 		System.out.println("| Message: " + payload);
 		System.out.println("-------------------------------------------------");
 		
-		// DO SOME MAGIC HERE!
-		
-		//
-		// Obtenemos el id de la función
-		//   Los topics están organizados de la siguiente manera:
-		//         $topic_base/dispositivo/funcion/$ID-FUNCION/commamnd
-		//   Donde el $topic_base es parametrizable al arrancar el dispositivo
-		//   y la $ID-FUNCION es el identificador de la dunción
-		
 		String[] topicNiveles = topic.split("/");
-		String funcionId = topicNiveles[topicNiveles.length-2];
-		
-		IFuncion f = this.dispositivo.getFuncion(funcionId);
-		if ( f == null ) {
-			MySimpleLogger.warn(this.loggerId, "No encontrada funcion " + funcionId);
+		String identifier = topicNiveles[topicNiveles.length-2];
+
+		// Decodificar la acción
+		String accion;
+		try {
+			accion = new JSONObject(payload).getString("accion");	
+		} catch(JSONException e) {
+			MySimpleLogger.warn(this.loggerId, "Mensaje '" + payload + "' no reconocido.");
+			return;
+		}
+
+		// Si el topic es el del dispositivo
+		if ( identifier.equals(this.dispositivo.getId()) ) {
+			messageForDispositivo(accion);
 			return;
 		}
 		
-		
-		//
-		// Definimos una API con mensajes de acciones básicos
-		//
-
-		try {
-			// TO-DO: Ejercicio 7 - Codificar mensajes en JSON
-			String accion = new JSONObject(payload).getString("accion");
-
-			// TO-DO: Ejercicio 8 - Extender API para habilitar/deshabilitar dispositivo (y sus funciones)
-
-			if ( accion.equalsIgnoreCase("encender") ) {
-				f.encender();
-			} else if ( accion.equalsIgnoreCase("apagar") ) {
-				f.apagar();
-			} else if ( accion.equalsIgnoreCase("parpadear") ) {
-				f.parpadear();
-			} else {
-				MySimpleLogger.warn(this.loggerId, "Acción '" + payload + "' no reconocida. Sólo admitidas: encender, apagar o parpadear");
-			}
-		} catch (JSONException e) {
-			MySimpleLogger.warn(this.loggerId, "Mensaje '" + payload + "' no reconocido.");
+		// Si el topic es el de la función
+		IFuncion funcion = this.dispositivo.getFuncion(identifier);
+		if ( funcion != null ) {
+			messageForFuncion(funcion, accion);
+			return;
 		}
-		
+
+		MySimpleLogger.warn(this.loggerId, "No encontrado dispositivo o función: " + identifier);
+	}
+
+	protected void messageForDispositivo(String accion) {
+		if (accion.equalsIgnoreCase("habilitar")) {
+			this.dispositivo.habilitar();
+		} else if (accion.equalsIgnoreCase("deshabilitar")) {
+			this.dispositivo.deshabilitar();
+		} else {
+			MySimpleLogger.warn(this.loggerId, "Acción '" + accion + "' no reconocida. Sólo admitidas: habilitar, deshabilitar.");
+		}
+	}
+
+	protected void messageForFuncion(IFuncion funcion, String accion) {
+		if ( accion.equalsIgnoreCase("encender") ) {
+			funcion.encender();
+		} else if ( accion.equalsIgnoreCase("apagar") ) {
+			funcion.apagar();
+		} else if ( accion.equalsIgnoreCase("parpadear") ) {
+			funcion.parpadear();
+		} else {
+			MySimpleLogger.warn(this.loggerId, "Acción '" + accion + "' no reconocida. Sólo admitidas: encender, apagar o parpadear");
+		}
 	}
 
 	/**
@@ -212,6 +218,7 @@ public class Dispositivo_APIMQTT implements MqttCallback {
 		for(IFuncion f : this.dispositivo.getFunciones())
 			this.subscribe(this.calculateCommandTopic(f));
 
+		this.subscribe(calculateCommandTopic());
 	}
 	
 	
@@ -231,6 +238,8 @@ public class Dispositivo_APIMQTT implements MqttCallback {
 	protected String calculateInfoTopic(IFuncion f) {
 		return Configuracion.TOPIC_BASE + "dispositivo/" + dispositivo.getId() + "/funcion/" + f.getId() + "/info";
 	}
-	
 
+	protected String calculateCommandTopic() {
+		return Configuracion.TOPIC_BASE + "dispositivo/" + this.dispositivo.getId() + "/comandos";
+	}
 }
