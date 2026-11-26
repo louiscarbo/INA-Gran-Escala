@@ -8,12 +8,47 @@
             "type": "java",
             "name": "Dispositivo",
             "request": "launch",
-            "mainClass": "dispositivo.iniciador.DispositivoIniciador",
+            "mainClass": "dispositivo/dispositivo.iniciador.DispositivoIniciador",
+            "projectName": "dispositivo",
             "args": [
                 "ttmi050",
                 "ttmi050.iot.upv.es",
                 8182,
-                "tcp://mqttserver:1883"]
+                "tcp://tambori.dsic.upv.es:10083"]
+        },
+        {
+            "type": "java",
+            "name": "Dispositivo2",
+            "request": "launch",
+            "mainClass": "dispositivo/dispositivo.iniciador.DispositivoIniciador",
+            "projectName": "dispositivo",
+            "args": [
+                "ttmi051",
+                "ttmi051.iot.upv.es",
+                8183,
+                "tcp://tambori.dsic.upv.es:10083"]
+        },
+        {
+            "type": "java",
+            "name": "ControladorSemaforico",
+            "request": "launch",
+            "mainClass": "dispositivo/dispositivo.controladores.ControladorSemaforico",
+            "projectName": "dispositivo",
+            "args": [
+                "tcp://tambori.dsic.upv.es:10083",
+                "ttmi050",
+                "ttmi051"]
+        },
+        {
+            "type": "java",
+            "name": "ControladorMaestroEsclavos",
+            "request": "launch",
+            "mainClass": "dispositivo/dispositivo.controladores.ControladorMaestroEsclavos",
+            "projectName": "dispositivo",
+            "args": [
+                "tcp://tambori.dsic.upv.es:10083",
+                "ttmi050",
+                "ttmi051"]
         },
         {
             "type": "java",
