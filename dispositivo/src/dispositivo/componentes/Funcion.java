@@ -1,5 +1,6 @@
 package dispositivo.componentes;
 
+import dispositivo.api.mqtt.FuncionPublisher_MQTT;
 import dispositivo.interfaces.FuncionStatus;
 import dispositivo.interfaces.IFuncion;
 import dispositivo.utils.MySimpleLogger;
@@ -10,6 +11,7 @@ public class Funcion implements IFuncion {
 	protected FuncionStatus initialStatus = null;
 	protected FuncionStatus status = null;
 	protected boolean habilitado = true;
+	protected FuncionPublisher_MQTT publisher = null;
 	
 	private String loggerId = null;
 	
@@ -41,7 +43,8 @@ public class Funcion implements IFuncion {
 		}
 		MySimpleLogger.info(this.loggerId, "==> Encender");
 		this.setStatus(FuncionStatus.ON);
-		// TO-DO: Ejercicio 9 - Publicar estado de Funcion (publishStatusChange())
+		// Ejercicio 9 - Publicar estado de Funcion
+		this.publishStatusChange();
 		return this;
 	}
 
@@ -53,7 +56,8 @@ public class Funcion implements IFuncion {
 		}
 		MySimpleLogger.info(this.loggerId, "==> Apagar");
 		this.setStatus(FuncionStatus.OFF);
-		// TO-DO: Ejercicio 9 - Publicar estado de Funcion (publishStatusChange())
+		// Ejercicio 9 - Publicar estado de Funcion
+		this.publishStatusChange();
 		return this;
 	}
 
@@ -65,7 +69,8 @@ public class Funcion implements IFuncion {
 		}
 		MySimpleLogger.info(this.loggerId, "==> Parpadear");
 		this.setStatus(FuncionStatus.BLINK);
-		// TO-DO: Ejercicio 9 - Publicar estado de Funcion (publishStatusChange())
+		// Ejercicio 9 - Publicar estado de Funcion
+		this.publishStatusChange();
 		return this;
 	}
 	
@@ -123,9 +128,15 @@ public class Funcion implements IFuncion {
 		this.habilitado = false;
 	}
 
+	public void setPublisher(FuncionPublisher_MQTT publisher) {
+		this.publisher = publisher;
+	}
+
 	protected void publishStatusChange() {
 		
-		// TO-DO: Ejercicio 9 - Implementar notificaciones 'push'
+		// Ejercicio 9 - Implementar notificaciones 'push'
+		if ( this.publisher != null )
+			this.publisher.publish_status();
 
 	}
 }

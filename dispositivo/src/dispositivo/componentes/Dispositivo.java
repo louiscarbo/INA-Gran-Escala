@@ -6,6 +6,7 @@ import java.util.Map;
 
 import dispositivo.api.iot.infraestructure.Dispositivo_RegistradorMQTT;
 import dispositivo.api.mqtt.Dispositivo_APIMQTT;
+import dispositivo.api.mqtt.FuncionPublisher_MQTT;
 import dispositivo.api.rest.Dispositivo_APIREST;
 import dispositivo.interfaces.IDispositivo;
 import dispositivo.interfaces.IFuncion;
@@ -18,10 +19,12 @@ public class Dispositivo implements IDispositivo {
 	protected Dispositivo_APIMQTT apiFuncionesMQTT = null;
 	protected Dispositivo_APIREST apiFuncionesREST = null;
 	protected boolean habilitado = true;
+	protected String mqttBrokerURL = null;
 	
 	
 	public static Dispositivo build(String deviceId, String ip, String mqttBrokerURL) {
 		Dispositivo dispositivo = new Dispositivo(deviceId);
+		dispositivo.mqttBrokerURL = mqttBrokerURL;
 		dispositivo.registrador = Dispositivo_RegistradorMQTT.build(deviceId, ip, mqttBrokerURL);
 		dispositivo.apiFuncionesMQTT = Dispositivo_APIMQTT.build(dispositivo, mqttBrokerURL);
 		dispositivo.apiFuncionesREST = Dispositivo_APIREST.build(dispositivo);
@@ -30,6 +33,7 @@ public class Dispositivo implements IDispositivo {
 
 	public static Dispositivo build(String deviceId, String ip, int port, String mqttBrokerURL) {
 		Dispositivo dispositivo = new Dispositivo(deviceId);
+		dispositivo.mqttBrokerURL = mqttBrokerURL;
 		dispositivo.registrador = Dispositivo_RegistradorMQTT.build(deviceId, ip, mqttBrokerURL);
 		dispositivo.apiFuncionesMQTT = Dispositivo_APIMQTT.build(dispositivo, mqttBrokerURL);
 		dispositivo.apiFuncionesREST = Dispositivo_APIREST.build(dispositivo, port);
@@ -66,6 +70,10 @@ public class Dispositivo implements IDispositivo {
 		if ( this.getFunctions() == null )
 			this.setFunctions(new HashMap<String, IFuncion>());
 		this.getFunctions().put(f.getId(), f);
+
+		// Ejercicio 9 - Asociamos a la función el componente que publica su estado
+		if ( f instanceof Funcion )
+			((Funcion) f).setPublisher(FuncionPublisher_MQTT.build(this.deviceId, f, this.mqttBrokerURL));
 		return this;
 	}
 	
