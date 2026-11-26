@@ -9,6 +9,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import dispositivo.interfaces.Configuracion;
 import dispositivo.interfaces.IDispositivo;
@@ -92,21 +94,24 @@ public class Dispositivo_APIMQTT implements MqttCallback {
 		// Definimos una API con mensajes de acciones básicos
 		//
 
-		// TO-DO: Ejercicio 7 - Codificar mensajes en JSON
+		try {
+			// TO-DO: Ejercicio 7 - Codificar mensajes en JSON
+			String accion = new JSONObject(payload).getString("accion");
 
-		// TO-DO: Ejercicio 8 - Extender API para habilitar/deshabilitar dispositivo (y sus funciones)
+			// TO-DO: Ejercicio 8 - Extender API para habilitar/deshabilitar dispositivo (y sus funciones)
 
-		if ( payload.equalsIgnoreCase("encender") ) {
-			f.encender();
-		} else if ( payload.equalsIgnoreCase("apagar") ) {
-			f.apagar();
-		} else if ( payload.equalsIgnoreCase("parpadear") ) {
-			f.parpadear();
-		} else {
-			MySimpleLogger.warn(this.loggerId, "Acción '" + payload + "' no reconocida. Sólo admitidas: encender, apagar o parpadear");
+			if ( accion.equalsIgnoreCase("encender") ) {
+				f.encender();
+			} else if ( accion.equalsIgnoreCase("apagar") ) {
+				f.apagar();
+			} else if ( accion.equalsIgnoreCase("parpadear") ) {
+				f.parpadear();
+			} else {
+				MySimpleLogger.warn(this.loggerId, "Acción '" + payload + "' no reconocida. Sólo admitidas: encender, apagar o parpadear");
+			}
+		} catch (JSONException e) {
+			MySimpleLogger.warn(this.loggerId, "Mensaje '" + payload + "' no reconocido.");
 		}
-
-		
 		
 	}
 
